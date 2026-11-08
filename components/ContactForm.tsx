@@ -2,11 +2,13 @@
 
 import Script from "next/script";
 import { useEffect, useRef, useState } from "react";
-import { budgets, services } from "@/lib/site";
+import { budgets, services, site } from "@/lib/site";
+import { leadSchema } from "@/lib/lead";
 import { readAttribution } from "@/lib/attribution";
 import { track } from "@/lib/analytics";
 
 type Errors = Partial<Record<string, string>>;
+const FAILED = "failed";
 const TURNSTILE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function ContactForm() {
@@ -61,12 +63,29 @@ export default function ContactForm() {
       website: String(fd.get("website") ?? ""),
       startedAt: startedAt.current,
       turnstileToken: (fd.get("cf-turnstile-response") as string) || undefined,
+      pageUrl: window.location.href.slice(0, 500),
       attribution: readAttribution(),
     };
 
-    setStatus("sending");
     setErrors({});
     setServerError("");
+
+    // Same rules as the server, checked first so people see mistakes instantly.
+    const check = leadSchema.safeParse(payload);
+    if (!check.success) {
+      const found: Errors = {};
+      for (const issue of check.error.issues) {
+        const key = String(issue.path[0] ?? "form");
+        if (key !== "website" && !found[key]) found[key] = issue.message;
+      }
+      if (Object.keys(found).length) {
+        setErrors(found);
+        form.querySelector<HTMLElement>(`[name="${Object.keys(found)[0]}"]`)?.focus();
+        return;
+      }
+    }
+
+    setStatus("sending");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
@@ -80,11 +99,17 @@ export default function ContactForm() {
         form.reset();
         return;
       }
-      if (data.errors) setErrors(data.errors);
-      setServerError(data.error ?? "Something went wrong. Please try again or email us directly.");
+      if (data.errors) {
+        setErrors(data.errors);
+        setServerError(data.error ?? "Please check the highlighted fields.");
+      } else if (res.status === 429 && data.error) {
+        setServerError(data.error);
+      } else {
+        setServerError(FAILED);
+      }
       setStatus("error");
     } catch {
-      setServerError("We couldn't reach the server. Check your connection and try again.");
+      setServerError(FAILED);
       setStatus("error");
     }
   }
@@ -94,8 +119,8 @@ export default function ContactForm() {
       <div className="form" role="status" aria-live="polite">
         <div className="success">
           <span className="tick" aria-hidden="true">✓</span>
-          <h3>Thanks, we&apos;ve got it.</h3>
-          <p>We&apos;ll reply within one working day. A confirmation is on its way to your inbox.</p>
+          <h3>Message sent</h3>
+          <p>Thanks! We&apos;ll get back to you within one working day.</p>
           <button type="button" className="ghost" onClick={() => setStatus("idle")} style={{ marginTop: 8 }}>
             Send another message
           </button>
@@ -191,12 +216,18 @@ export default function ContactForm() {
 
       {TURNSTILE_KEY ? <div className="cf-turnstile" data-sitekey={TURNSTILE_KEY} data-theme="dark" /> : null}
 
-      {serverError ? <p id="form-err" className="alert bad" role="alert">{serverError}</p> : null}
+      {serverError ? (
+        <p id="form-err" className="alert bad" role="alert">
+          {serverError === FAILED ? (
+            <>Something went wrong. Email us directly at <a href={`mailto:${site.email}`}>{site.email}</a>.</>
+          ) : serverError}
+        </p>
+      ) : null}
 
       <div className="form-foot">
         <small>We reply within one working day.</small>
-        <button type="submit" className="btn" disabled={status === "sending"}>
-          {status === "sending" ? "Sending…" : "Send enquiry →"}
+        <button type="submit" className="btn" disabled={status === "sending"} aria-busy={status === "sending"}>
+          {status === "sending" ? <><span className="spin" aria-hidden="true" />Sending…</> : "Send enquiry →"}
         </button>
       </div>
     </form>

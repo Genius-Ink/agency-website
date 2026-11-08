@@ -1,8 +1,8 @@
 // Central place for company details. Fill in the placeholders before launch.
 export const site = {
   name: "Genius Inc.",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://example.com",
-  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "hello@example.com",
+  url: process.env.NEXT_PUBLIC_SITE_URL ?? "https://geniusink.tech",
+  email: process.env.NEXT_PUBLIC_CONTACT_EMAIL ?? "john.daves13@gmail.com",
   whatsapp: process.env.NEXT_PUBLIC_WHATSAPP_NUMBER ?? "", // digits only, e.g. 491701234567
   city: "[CITY]",
   linkedin: "https://www.linkedin.com/company/71351025/",

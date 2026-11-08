@@ -7,8 +7,10 @@ const env = {
   supabaseUrl: process.env.SUPABASE_URL,
   supabaseKey: process.env.SUPABASE_SERVICE_ROLE_KEY,
   resendKey: process.env.RESEND_API_KEY,
-  notifyTo: process.env.LEAD_NOTIFY_EMAIL,
-  mailFrom: process.env.MAIL_FROM ?? "Genius Inc. <onboarding@resend.dev>",
+  notifyTo: process.env.LEAD_NOTIFY_EMAIL || "john.daves13@gmail.com",
+  // Until geniusink.tech is verified in Resend, onboarding@resend.dev can only deliver to the
+  // email address that owns the Resend account.
+  mailFrom: process.env.MAIL_FROM || "Genius Ink website <onboarding@resend.dev>",
   turnstileSecret: process.env.TURNSTILE_SECRET_KEY,
 };
 
@@ -75,15 +77,20 @@ async function saveLead(lead: Lead, meta: { ip: string; userAgent: string }) {
   return { stored: true };
 }
 
-async function sendEmail(to: string, subject: string, html: string, replyTo?: string) {
+async function sendEmail(to: string, subject: string, html: string, replyTo?: string, text?: string) {
   if (!env.resendKey) return false;
-  const res = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${env.resendKey}`, "Content-Type": "application/json" },
-    body: JSON.stringify({ from: env.mailFrom, to: [to], subject, html, reply_to: replyTo }),
-  });
-  if (!res.ok) console.error("[contact] Resend error", res.status, await res.text());
-  return res.ok;
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${env.resendKey}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from: env.mailFrom, to: [to], subject, html, text, reply_to: replyTo }),
+    });
+    if (!res.ok) console.error("[contact] Resend error", res.status, await res.text());
+    return res.ok;
+  } catch (e) {
+    console.error("[contact] Resend request failed", e);
+    return false;
+  }
 }
 
 function sourceLabel(lead: Lead) {
@@ -129,47 +136,46 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Spam check failed. Please refresh the page and try again." }, { status: 400 });
   }
 
+  let stored = false;
   try {
-    const { stored } = await saveLead(lead, { ip, userAgent });
-    if (!stored && !(env.resendKey && env.notifyTo) && process.env.NODE_ENV === "production") {
-      // Nowhere to put the lead — fail loudly instead of silently losing it.
-      console.error("[contact] No storage or notification configured in production.");
-      return NextResponse.json({ ok: false, error: "Our form is being set up. Please email us directly for now." }, { status: 503 });
-    }
+    ({ stored } = await saveLead(lead, { ip, userAgent }));
   } catch (e) {
-    console.error("[contact]", e);
-    return NextResponse.json({ ok: false, error: "We couldn't save your message. Please email us directly." }, { status: 500 });
+    console.error("[contact]", e); // keep going: the email below still delivers the enquiry
   }
 
+  const now = new Date();
   const rows: [string, string][] = [
     ["Name", lead.name],
     ["Email", lead.email],
-    ["Phone", lead.phone || "—"],
+    ["Phone / WhatsApp", lead.phone || "—"],
     ["Business / event", lead.company || "—"],
     ["Services", lead.services.join(", ") || "—"],
     ["Budget", lead.budget ?? "—"],
     ["Package", lead.package || "—"],
-    ["Source", sourceLabel(lead)],
-    ["Landing page", lead.attribution?.landing_page ?? "—"],
+    ["Sent from", lead.pageUrl || "—"],
+    ["Received", `${now.toLocaleString("en-GB", { timeZone: "Europe/Berlin", dateStyle: "full", timeStyle: "short" })} (Berlin) · ${now.toISOString()}`],
+    ["How they found us", sourceLabel(lead)],
+    ["First page visited", lead.attribution?.landing_page ?? "—"],
   ];
-  const table = rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#666">${k}</td><td style="padding:4px 0"><b>${esc(v)}</b></td></tr>`).join("");
+  const table = rows.map(([k, v]) => `<tr><td style="padding:4px 12px 4px 0;color:#666;vertical-align:top">${k}</td><td style="padding:4px 0"><b>${esc(v)}</b></td></tr>`).join("");
+  const html = `<h2>New website enquiry</h2><table>${table}</table><h3>Message</h3><p style="white-space:pre-wrap">${esc(lead.message)}</p><p style="color:#666">Reply to this email to answer ${esc(lead.name)} directly.</p>`;
+  const text = `${rows.map(([k, v]) => `${k}: ${v}`).join("\n")}\n\nMessage:\n${lead.message}\n`;
+  const subject = `New enquiry from geniusink.tech: ${lead.name.replace(/[\r\n]+/g, " ")}`;
 
-  await Promise.allSettled([
-    env.notifyTo
-      ? sendEmail(
-          env.notifyTo,
-          `New enquiry: ${lead.name}${lead.services[0] ? " · " + lead.services[0] : ""}`,
-          `<h2>New website enquiry</h2><table>${table}</table><p style="white-space:pre-wrap">${esc(lead.message)}</p>`,
-          lead.email,
-        )
-      : Promise.resolve(false),
-    sendEmail(
-      lead.email,
-      "Thanks — we've got your message",
-      `<p>Hi ${esc(lead.name.split(" ")[0])},</p><p>Thanks for reaching out to Genius Inc. We've received your message and will reply within one working day.</p><p>— The Genius Inc. team</p>`,
-      env.notifyTo,
-    ),
-  ]);
+  const notified = await sendEmail(env.notifyTo, subject, html, lead.email, text);
+  if (!notified && !stored) {
+    console.error("[contact] Enquiry not delivered: email failed and no storage configured.");
+    return NextResponse.json({ ok: false, error: "delivery" }, { status: 502 });
+  }
+
+  // Confirmation to the visitor. Only once MAIL_FROM is on a domain verified in Resend; the
+  // onboarding@resend.dev sender can't deliver to other people's inboxes.
+  if (process.env.MAIL_FROM) await sendEmail(
+    lead.email,
+    "Thanks, we've got your message",
+    `<p>Hi ${esc(lead.name.split(" ")[0])},</p><p>Thanks for reaching out to Genius Ink. We've received your message and will get back to you within one working day.</p><p>The Genius Ink team</p>`,
+    env.notifyTo,
+  );
 
   return NextResponse.json({ ok: true });
 }

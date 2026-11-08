@@ -461,6 +461,8 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 .success h3 { font-size: 30px; color: #fff; }
 .success p { color: var(--muted); max-width: 420px; }
 .btn[disabled] { opacity: .6; cursor: progress; transform: none; box-shadow: none; }
+.btn .spin { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(11, 13, 16, .3); border-top-color: var(--bg); animation: spin .7s linear infinite; }
+.alert.bad a { color: #fff; font-weight: 600; }
 
 /* ---------- footer ---------- */
 .site-footer { border-top: 1px solid #1c1f25; padding-top: 32px; padding-bottom: 48px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 16px; font-size: 14px; color: var(--muted); }

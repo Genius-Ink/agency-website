@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { site } from "@/lib/site";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Datenschutz", robots: { index: false } };
@@ -30,7 +31,7 @@ export default function Datenschutz() {
       <p>All fonts are hosted on our own server. No connection to Google Fonts is made.</p>
 
       <h2>7. Ihre Rechte</h2>
-      <p>You can request access to, correction or deletion of your data, restrict or object to processing, and withdraw consent at any time by emailing [email]. You also have the right to complain to a data protection authority.</p>
+      <p>You can request access to, correction or deletion of your data, restrict or object to processing, and withdraw consent at any time by emailing <a href={`mailto:${site.email}`}>{site.email}</a>. You also have the right to complain to a data protection authority.</p>
     </main>
   );
 }

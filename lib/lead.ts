@@ -16,6 +16,7 @@ export const leadSchema = z.object({
   website: z.string().max(0).optional().or(z.literal("")), // honeypot: must stay empty
   startedAt: z.number().optional(), // ms timestamp when the form was rendered
   turnstileToken: z.string().max(4096).optional(),
+  pageUrl: z.string().max(500).optional(), // page the form was sent from
   // attribution (first touch)
   attribution: z
     .object({

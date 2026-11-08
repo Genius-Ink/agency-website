@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { site } from "@/lib/site";
 import Link from "next/link";
 
 export const metadata: Metadata = { title: "Impressum", robots: { index: false } };
@@ -13,7 +14,7 @@ export default function Impressum() {
       <h2>Angaben gemäß § 5 DDG</h2>
       <p>[Full name / company name]<br />[Street and number]<br />[Postcode City]<br />Germany</p>
       <h2>Kontakt</h2>
-      <p>E-Mail: [email]<br />Telefon: [phone]</p>
+      <p>E-Mail: <a href={`mailto:${site.email}`}>{site.email}</a><br />Telefon: [phone]</p>
       <h2>Umsatzsteuer-ID</h2>
       <p>[USt-IdNr. if you have one, otherwise remove this section]</p>
       <h2>Verantwortlich für den Inhalt</h2>
