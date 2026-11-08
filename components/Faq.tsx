@@ -16,7 +16,7 @@ export default function Faq() {
   return (
     <section id="faq" className="container faq" style={{ paddingBottom: 112 }}>
       <div className="intro rv">
-        <p className="eyebrow"><b>07</b>FAQ</p>
+        <p className="eyebrow"><b>06</b>FAQ</p>
         <h2 className="h2">Questions</h2>
       </div>
       <div className="list">

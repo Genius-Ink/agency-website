@@ -1,9 +1,10 @@
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import { Audience, Footer, Marquee, Packages, Process, Services, Work } from "@/components/Sections";
+import { Audience, Footer, Marquee, Process, Services, Work } from "@/components/Sections";
 import Faq from "@/components/Faq";
 import Contact from "@/components/Contact";
 import Testimonials from "@/components/Testimonials";
+import CodeDrawer from "@/components/CodeDrawer";
 import { site } from "@/lib/site";
 
 export default function Home() {
@@ -12,7 +13,7 @@ export default function Home() {
     "@type": "ProfessionalService",
     name: site.name,
     url: site.url,
-    logo: `${site.url}/logo.png`,
+    logo: `${site.url}/logo-badge.png`,
     email: site.email,
     areaServed: ["Europe", "Africa"],
     sameAs: [site.linkedin, site.github],
@@ -31,11 +32,11 @@ export default function Home() {
         <Work />
         <Testimonials />
         <Process />
-        <Packages />
         <Faq />
         <Contact />
       </main>
       <Footer city={site.city} github={site.github} linkedin={site.linkedin} />
+      <CodeDrawer />
     </>
   );
 }

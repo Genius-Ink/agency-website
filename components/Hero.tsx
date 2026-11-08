@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { EqBars, Spark, SPARK } from "./icons";
+import { ShowCodeButton } from "./CodeDrawer";
 
 const WORDS = ["websites.", "events.", "videos.", "social media.", "AI."];
 
@@ -136,6 +137,9 @@ export default function Hero() {
             <a href="#contact" className="btn plausible-event-name=CTA+Click plausible-event-position=hero">Tell us what you need →</a>
             <a href="#work" className="ghost">See the work</a>
           </div>
+          <ShowCodeButton position="hero" className="smc-link in d5">
+            Talk is cheap. <b>Show me the code →</b>
+          </ShowCodeButton>
         </div>
 
         <div
@@ -160,7 +164,7 @@ export default function Hero() {
               <div className="browser-body">
                 <div className={"bnav pv" + on(2)}>
                   <span className="left">
-                    <img src="/logo.png" alt="" />
+                    <img src="/logo-badge.png" alt="" />
                     <span className="bar-s" style={{ width: 52, height: 9, background: "#15171C" }} />
                   </span>
                   <span style={{ display: "flex", gap: 6 }}>
@@ -193,7 +197,7 @@ export default function Hero() {
 
             <div className="feed" aria-hidden="true">
               <div className="feed-head">
-                <span className="feed-title"><img src="/logo.png" alt="" />Your business today</span>
+                <span className="feed-title"><img src="/logo-badge.png" alt="" />Your business today</span>
                 <span className="feed-live"><i />Live</span>
               </div>
               <div className="feed-list">

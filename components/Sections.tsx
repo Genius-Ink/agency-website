@@ -1,5 +1,6 @@
 import Countdown from "./Countdown";
 import { EqBars, PlayIcon } from "./icons";
+import { ShowCodeButton } from "./CodeDrawer";
 
 function Eyebrow({ n, children }: { n: string; children: React.ReactNode }) {
   return <p className="eyebrow"><b>{n}</b>{children}</p>;
@@ -94,7 +95,10 @@ export function Work() {
           <Eyebrow n="03">Selected work</Eyebrow>
           <h2 className="h2">Recent work</h2>
         </div>
-        <p>From a pan-African tech summit to open-source software used by developers worldwide.</p>
+        <div className="work-aside">
+          <p>From a pan-African tech summit to open-source software used by developers worldwide.</p>
+          <ShowCodeButton position="work" />
+        </div>
       </div>
 
       <article className="wk wk-feature rv">
@@ -225,7 +229,7 @@ export function Process() {
   );
 }
 
-/* ---------------- packages ---------------- */
+/* ---------------- packages (not on the page for now; re-add <Packages /> in app/page.tsx and the nav link in Header.tsx) ---------------- */
 const PACKS = [
   { t: "Launch", tag: "Get your business online, properly.", price: "[PRICE]", per: "", items: ["Animated website, up to 5 pages", "Google Business profile & Maps", "Basic SEO and analytics", "Launch social posts"], cta: "Get a quote" },
   { t: "Event Tech", tag: "Everything your event needs online.", price: "[PRICE]", per: "", items: ["Event site with live countdown", "Speakers, agenda & partners", "Ticketing / RSVP integration", "Promo & recap video", "Tech support on event days"], cta: "Plan my event", best: true },
@@ -268,7 +272,7 @@ export function Footer({ city, github, linkedin }: { city: string; github: strin
   return (
     <footer className="container site-footer">
       <p className="copy">
-        <span className="logo-tile"><img src="/logo.png" alt="Genius Inc. logo" /></span>
+        <span className="logo-tile"><img src="/logo-badge.png" alt="Genius Inc. logo" /></span>
         © {new Date().getFullYear()} Genius Inc. · {city}, Germany
       </p>
       <nav aria-label="Footer">

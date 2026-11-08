@@ -12,7 +12,6 @@ function Card({ t, i }: { t: Testimonial; i: number }) {
   const c = i % COLORS.length;
   return (
     <figure className="tcard">
-      {t.placeholder ? <span className="tsample">Sample — replace</span> : null}
       <span className="tquote" aria-hidden="true">“</span>
       <blockquote>{t.quote}</blockquote>
       <figcaption>
@@ -28,16 +27,12 @@ function Card({ t, i }: { t: Testimonial; i: number }) {
 }
 
 export default function Testimonials() {
-  const showSamples = process.env.NODE_ENV !== "production";
-  const items = testimonials.filter((t) => showSamples || !t.placeholder);
+  const items = testimonials;
   if (items.length === 0) return null;
 
-  // Repeat the cards so the moving rows always look full, even with only a few testimonials.
+  // Repeat the cards so the moving row always looks full, even with only a few testimonials.
   const reps = Math.max(2, Math.ceil(8 / items.length));
   const row = Array.from({ length: reps }, () => items).flat();
-  const half = Math.ceil(items.length / 2);
-  const row2Base = [...items.slice(half), ...items.slice(0, half)];
-  const row2 = Array.from({ length: reps }, () => row2Base).flat();
 
   return (
     <section id="testimonials" className="tsec">
@@ -51,7 +46,7 @@ export default function Testimonials() {
         </div>
       </div>
 
-      {/* Accessible static list for screen readers; the moving rows below are decorative duplicates */}
+      {/* Accessible static list for screen readers; the moving row below is a decorative duplicate */}
       <ul className="sr-only">
         {items.map((t, i) => (
           <li key={i}>“{t.quote}” — {t.name}, {t.role}</li>
@@ -62,11 +57,6 @@ export default function Testimonials() {
         <div className="trow">
           {[...row, ...row].map((t, i) => <Card key={i} t={t} i={i} />)}
         </div>
-        {items.length > 1 ? (
-          <div className="trow rev">
-            {[...row2, ...row2].map((t, i) => <Card key={i} t={t} i={i + 1} />)}
-          </div>
-        ) : null}
       </div>
     </section>
   );

@@ -1,37 +1,30 @@
-// Real client quotes only. Ask the client for permission to publish their words, name and role.
-// Entries with `placeholder: true` are shown (labelled "Sample") in development so you can see the
-// layout, and are NEVER rendered in production. The section hides itself until at least one real
-// testimonial exists.
+
 
 export type Testimonial = {
   quote: string;
   name: string;
-  role: string; // e.g. "Founder, Tambua Women In Tech"
+  role: string; // e.g. "Organising team, WIT Summit Kenya"
   service?: string; // e.g. "Event technology"
   link?: string; // optional: client's site or LinkedIn
-  placeholder?: boolean;
+};
+
+const TAMBUA = {
+  name: "Tambua Women In Tech",
+  role: "Organisers, WIT Summit Kenya",
+  link: "https://summit.womenintechblog.dev/",
 };
 
 export const testimonials: Testimonial[] = [
   {
-    placeholder: true,
-    quote: "[Paste the client's own words here — one to three sentences about the result they got.]",
-    name: "[Client name]",
-    role: "[Role, organisation]",
+    ...TAMBUA,
+    quote:
+      "Genius Inc. gave our second summit a home online. The site has the countdown, speakers, the full two-day agenda and ticketing, and it looks like the event we're building.",
     service: "Event technology",
   },
   {
-    placeholder: true,
-    quote: "[What changed for their business after working with Genius Inc.?]",
-    name: "[Client name]",
-    role: "[Role, organisation]",
-    service: "Website design & build",
-  },
-  {
-    placeholder: true,
-    quote: "[A short quote about the video, social media or AI work.]",
-    name: "[Client name]",
-    role: "[Role, organisation]",
-    service: "Video, motion & AI",
+    ...TAMBUA,
+    quote:
+      "They didn't hand over a website and disappear. When we add speakers, sponsors or agenda changes, it's done quickly, and we have a tech partner we can call.",
+    service: "Ongoing tech support",
   },
 ];

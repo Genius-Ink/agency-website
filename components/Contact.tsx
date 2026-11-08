@@ -14,7 +14,7 @@ export default function Contact() {
       </div>
       <div className="container contact-grid">
         <div className="contact-intro rv">
-          <p className="eyebrow"><b>08</b>Contact</p>
+          <p className="eyebrow"><b>07</b>Contact</p>
           <h2>Have a business, an event or an idea?</h2>
           <p>Tell us what you&apos;re working on. We&apos;ll reply within one working day with next steps.</p>
           <div className="contact-alt">

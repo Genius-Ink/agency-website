@@ -8,7 +8,6 @@ const LINKS = [
   { href: "#services", id: "services", label: "Services" },
   { href: "#work", id: "work", label: "Work" },
   { href: "#process", id: "process", label: "Process" },
-  { href: "#packages", id: "packages", label: "Packages" },
   { href: "#faq", id: "faq", label: "FAQ" },
 ];
 
@@ -74,7 +73,7 @@ export default function Header() {
           <div className="float-nav-row">
             <a href="#top" className="brand" onClick={close}>
               <span className="logo-tile">
-                <Image src="/logo.png" alt="" width={53} height={72} priority />
+                <Image src="/logo-badge.png" alt="" width={256} height={256} priority />
               </span>
               <span className="brand-name">Genius Inc.</span>
             </a>

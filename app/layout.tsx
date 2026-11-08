@@ -15,14 +15,13 @@ export const metadata: Metadata = {
   },
   description:
     "Genius Inc. makes businesses impossible to ignore: websites, event platforms, video, Google presence, social media, app scaling and AI integration across Europe and Africa.",
-  icons: { icon: "/logo.png", apple: "/logo.png" },
   openGraph: {
     type: "website",
     siteName: "Genius Inc.",
     title: "Genius Inc. — Make your business impossible to ignore",
     description:
       "Websites, event tech, video, Google presence, social media and AI for businesses and events across Europe and Africa.",
-    images: ["/logo.png"],
+    images: ["/brand/genius-ink-dark.png"],
   },
 };
 
